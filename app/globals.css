@@ -27,6 +27,10 @@ body {
   font-family: Circular, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 button,
 input,
 select {
@@ -184,6 +188,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 12px;
   box-shadow: var(--shadow);
+  scroll-margin-top: 18px;
 }
 
 .metric {
@@ -430,6 +435,10 @@ h1 {
   display: grid;
   gap: 12px;
   padding: 18px;
+}
+
+.compactGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .mapItem {

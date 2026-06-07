@@ -18,14 +18,14 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { label: "Products", icon: BriefcaseBusiness },
-  { label: "Signals", icon: Radar },
-  { label: "Opportunities", icon: Inbox, active: true },
-  { label: "Responses", icon: MessageSquareText },
-  { label: "Leads", icon: Users },
-  { label: "Campaigns", icon: Megaphone },
-  { label: "Analytics", icon: BarChart3 },
-  { label: "Settings", icon: Settings }
+  { label: "Products", icon: BriefcaseBusiness, href: "#products", active: true },
+  { label: "Signals", icon: Radar, href: "#signals" },
+  { label: "Opportunities", icon: Inbox, href: "#opportunities" },
+  { label: "Responses", icon: MessageSquareText, href: "#responses" },
+  { label: "Leads", icon: Users, href: "#leads" },
+  { label: "Campaigns", icon: Megaphone, href: "#campaigns" },
+  { label: "Analytics", icon: BarChart3, href: "#analytics" },
+  { label: "Settings", icon: Settings, href: "#settings" }
 ];
 
 const metrics = [
@@ -98,6 +98,24 @@ const engineMap = [
   { label: "Brandlytics CRM", value: "Push threshold 80+", width: "88%" }
 ];
 
+const signalRules = [
+  "Need and recommendation requests",
+  "Pain phrases and complaints",
+  "Buying intent and quote requests",
+  "Education intent and how-to questions"
+];
+
+const leads = [
+  { name: "example_user", source: "Reddit", offer: "Prayer App", score: 91 },
+  { name: "linkedin_member", source: "LinkedIn", offer: "Construction Client", score: 94 }
+];
+
+const campaigns = [
+  "Prayer App Global Demand",
+  "Fasting PDF YouTube Comments",
+  "Construction Leads Botswana"
+];
+
 export default function Home() {
   return (
     <main className="appShell">
@@ -114,7 +132,7 @@ export default function Home() {
             return (
               <a
                 className={`navItem ${item.active ? "active" : ""}`}
-                href="#"
+                href={item.href}
                 key={item.label}
               >
                 <Icon size={17} aria-hidden="true" />
@@ -160,7 +178,7 @@ export default function Home() {
             </article>
           ))}
 
-          <article className="panel profilePanel">
+          <article className="panel profilePanel" id="products">
             <div className="sectionHeader">
               <div>
                 <h2>Products / Services</h2>
@@ -225,7 +243,7 @@ export default function Home() {
             </div>
           </article>
 
-          <article className="panel wide">
+          <article className="panel wide" id="opportunities">
             <div className="sectionHeader">
               <h2>Opportunity Inbox</h2>
               <span className="pill">
@@ -256,28 +274,25 @@ export default function Home() {
             </div>
           </article>
 
-          <article className="panel side">
+          <article className="panel side" id="signals">
             <div className="sectionHeader">
-              <h2>Engine Map</h2>
+              <h2>Signals</h2>
               <span className="pill">
                 <Gauge size={14} aria-hidden="true" />
                 MVP
               </span>
             </div>
             <div className="mapList">
-              {engineMap.map((item) => (
-                <div className="mapItem" key={item.label}>
-                  <strong>{item.label}</strong>
-                  <span className="metricHint">{item.value}</span>
-                  <div className="progress" aria-hidden="true">
-                    <span style={{ width: item.width }} />
-                  </div>
+              {signalRules.map((rule) => (
+                <div className="mapItem" key={rule}>
+                  <strong>{rule}</strong>
+                  <span className="metricHint">Active signal category</span>
                 </div>
               ))}
             </div>
           </article>
 
-          <article className="panel wide">
+          <article className="panel wide" id="responses">
             <div className="sectionHeader">
               <h2>Response Drafts</h2>
               <span className="pill">
@@ -296,9 +311,68 @@ export default function Home() {
             ))}
           </article>
 
-          <article className="panel side">
+          <article className="panel side" id="leads">
             <div className="sectionHeader">
-              <h2>CRM Sync</h2>
+              <h2>Leads</h2>
+              <span className="pill">
+                <Users size={14} aria-hidden="true" />
+                CRM ready
+              </span>
+            </div>
+            <div className="mapList">
+              {leads.map((lead) => (
+                <div className="mapItem" key={lead.name}>
+                  <strong>{lead.name}</strong>
+                  <span className="metricHint">
+                    {lead.source} / {lead.offer} / {lead.score}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel wide" id="campaigns">
+            <div className="sectionHeader">
+              <h2>Campaigns</h2>
+              <span className="pill">
+                <Megaphone size={14} aria-hidden="true" />
+                Harvest runs
+              </span>
+            </div>
+            <div className="mapList compactGrid">
+              {campaigns.map((campaign) => (
+                <div className="mapItem" key={campaign}>
+                  <strong>{campaign}</strong>
+                  <span className="metricHint">Daily scan and draft generation</span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel side" id="analytics">
+            <div className="sectionHeader">
+              <h2>Analytics</h2>
+              <span className="pill">
+                <BarChart3 size={14} aria-hidden="true" />
+                Summary
+              </span>
+            </div>
+            <div className="mapList">
+              {engineMap.map((item) => (
+                <div className="mapItem" key={item.label}>
+                  <strong>{item.label}</strong>
+                  <span className="metricHint">{item.value}</span>
+                  <div className="progress" aria-hidden="true">
+                    <span style={{ width: item.width }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel side" id="settings">
+            <div className="sectionHeader">
+              <h2>Settings</h2>
               <span className="pill">
                 <PlugZap size={14} aria-hidden="true" />
                 Brandlytics
