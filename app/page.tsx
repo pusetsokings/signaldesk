@@ -16,6 +16,7 @@ import {
   Users,
   WandSparkles
 } from "lucide-react";
+import { LiveSignalTester } from "./components/live-signal-tester";
 
 const navItems = [
   { label: "Products", icon: BriefcaseBusiness, href: "#products", active: true },
@@ -118,7 +119,7 @@ const campaigns = [
 
 export default function Home() {
   return (
-    <main className="appShell">
+    <main className="appShell" id="top">
       <aside className="sidebar">
         <div className="brand">
           <div className="brandMark">
@@ -141,6 +142,9 @@ export default function Home() {
             );
           })}
         </nav>
+        <a className="overviewLink" href="#top">
+          Back to overview
+        </a>
       </aside>
 
       <section className="main">
@@ -148,8 +152,9 @@ export default function Home() {
           <div>
             <div className="eyebrow">signal.brandlytics.agency</div>
             <h1>Global signal harvesting for Brandlytics CRM</h1>
-            <div className="tagline">
-              Find people already asking for what you sell.
+            <div className="promiseBlock">
+              <span>SignalDesk promise</span>
+              <strong>Find people already asking for what you sell.</strong>
             </div>
             <p className="subtitle">
               The agent finds demand signals across public conversations,
@@ -243,13 +248,33 @@ export default function Home() {
             </div>
           </article>
 
+          <article className="panel profilePanel" id="live-test">
+            <div className="sectionHeader">
+              <div>
+                <h2>Live Signal Test</h2>
+                <p className="sectionNote">
+                  Run the first real scan against Reddit public search.
+                </p>
+              </div>
+              <a className="backLink" href="#top">
+                Back to overview
+              </a>
+            </div>
+            <LiveSignalTester />
+          </article>
+
           <article className="panel wide" id="opportunities">
             <div className="sectionHeader">
               <h2>Opportunity Inbox</h2>
-              <span className="pill">
-                <Globe2 size={14} aria-hidden="true" />
-                Global by default
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <Globe2 size={14} aria-hidden="true" />
+                  Global by default
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="opportunityList">
               {opportunities.map((item) => (
@@ -277,10 +302,15 @@ export default function Home() {
           <article className="panel side" id="signals">
             <div className="sectionHeader">
               <h2>Signals</h2>
-              <span className="pill">
-                <Gauge size={14} aria-hidden="true" />
-                MVP
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <Gauge size={14} aria-hidden="true" />
+                  MVP
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="mapList">
               {signalRules.map((rule) => (
@@ -295,10 +325,15 @@ export default function Home() {
           <article className="panel wide" id="responses">
             <div className="sectionHeader">
               <h2>Response Drafts</h2>
-              <span className="pill">
-                <Sparkles size={14} aria-hidden="true" />
-                Approval first
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <Sparkles size={14} aria-hidden="true" />
+                  Approval first
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             {drafts.map((draft) => (
               <div className="draft" key={draft.title}>
@@ -314,10 +349,15 @@ export default function Home() {
           <article className="panel side" id="leads">
             <div className="sectionHeader">
               <h2>Leads</h2>
-              <span className="pill">
-                <Users size={14} aria-hidden="true" />
-                CRM ready
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <Users size={14} aria-hidden="true" />
+                  CRM ready
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="mapList">
               {leads.map((lead) => (
@@ -334,10 +374,15 @@ export default function Home() {
           <article className="panel wide" id="campaigns">
             <div className="sectionHeader">
               <h2>Campaigns</h2>
-              <span className="pill">
-                <Megaphone size={14} aria-hidden="true" />
-                Harvest runs
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <Megaphone size={14} aria-hidden="true" />
+                  Harvest runs
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="mapList compactGrid">
               {campaigns.map((campaign) => (
@@ -352,10 +397,15 @@ export default function Home() {
           <article className="panel side" id="analytics">
             <div className="sectionHeader">
               <h2>Analytics</h2>
-              <span className="pill">
-                <BarChart3 size={14} aria-hidden="true" />
-                Summary
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <BarChart3 size={14} aria-hidden="true" />
+                  Summary
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="mapList">
               {engineMap.map((item) => (
@@ -373,10 +423,15 @@ export default function Home() {
           <article className="panel side" id="settings">
             <div className="sectionHeader">
               <h2>Settings</h2>
-              <span className="pill">
-                <PlugZap size={14} aria-hidden="true" />
-                Brandlytics
-              </span>
+              <div className="headerActions">
+                <span className="pill">
+                  <PlugZap size={14} aria-hidden="true" />
+                  Brandlytics
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
             </div>
             <div className="mapList">
               <div className="mapItem">

@@ -56,6 +56,9 @@ a {
   border-right: 1px solid var(--line);
   background: #ffffff;
   padding: 24px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .brand {
@@ -99,6 +102,15 @@ a {
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
+.overviewLink {
+  display: inline-flex;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .main {
   min-width: 0;
   padding: 28px;
@@ -130,17 +142,28 @@ h1 {
   max-width: 780px;
 }
 
-.tagline {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  margin-top: 12px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--foreground);
-  padding: 5px 10px;
+.promiseBlock {
+  display: grid;
+  gap: 8px;
+  max-width: 760px;
+  margin-top: 18px;
+  border-left: 4px solid var(--accent);
+  background: #fafafa;
+  padding: 18px 20px;
+}
+
+.promiseBlock span {
+  color: var(--muted);
   font-size: 12px;
   font-weight: 500;
+  text-transform: uppercase;
+}
+
+.promiseBlock strong {
+  color: var(--foreground);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.18;
 }
 
 .subtitle {
@@ -228,6 +251,21 @@ h1 {
   gap: 12px;
   padding: 17px 18px;
   border-bottom: 1px solid var(--line);
+}
+
+.headerActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.backLink {
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .sectionHeader h2 {
@@ -362,6 +400,172 @@ h1 {
   line-height: 1.45;
 }
 
+.liveTester {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 18px;
+  padding: 18px;
+}
+
+.liveForm {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.liveForm label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.liveForm input,
+.liveForm textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--foreground);
+  padding: 9px 12px;
+  outline: none;
+}
+
+.liveForm textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.liveButton {
+  width: fit-content;
+}
+
+.connectorNote {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.liveButton:disabled {
+  opacity: 0.7;
+}
+
+.liveResults {
+  min-height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+.liveResultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 16px;
+}
+
+.liveResultsHeader div {
+  display: grid;
+  gap: 4px;
+}
+
+.liveResultsHeader strong {
+  font-weight: 500;
+}
+
+.liveResultsHeader span,
+.scanError {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.scanError {
+  margin: 16px;
+}
+
+.liveSignal {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.liveSignal:last-child {
+  border-bottom: 0;
+}
+
+.liveSignal h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.liveSignal p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.liveSignal a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  color: var(--foreground);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.suggestedAction {
+  border-left: 3px solid var(--accent);
+  background: #f2fbf7;
+  padding: 10px 11px;
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.approvalDraft {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafafa;
+  padding: 12px;
+}
+
+.approvalDraft > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.approvalDraft strong {
+  font-weight: 500;
+}
+
+.approvalDraft span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.approvalDraft p {
+  color: var(--foreground);
+}
+
+.approvalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .opportunityList {
   display: grid;
 }
@@ -475,6 +679,8 @@ h1 {
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    position: static;
+    height: auto;
   }
 
   .nav {
@@ -483,8 +689,14 @@ h1 {
 
   .metric,
   .wide,
-  .side {
+  .side,
+  .liveTester {
     grid-column: span 12;
+  }
+
+  .liveTester,
+  .profileGrid {
+    grid-template-columns: 1fr;
   }
 
   .topbar {
@@ -507,5 +719,19 @@ h1 {
 
   h1 {
     font-size: 27px;
+  }
+
+  .promiseBlock strong {
+    font-size: 22px;
+  }
+
+  .compactGrid,
+  .profileForm {
+    grid-template-columns: 1fr;
+  }
+
+  .profileForm label:nth-child(3),
+  .profileForm label:nth-child(4) {
+    grid-column: span 1;
   }
 }
