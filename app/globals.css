@@ -566,6 +566,61 @@ h1 {
   gap: 8px;
 }
 
+.engineGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px;
+}
+
+.engineCard {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafafa;
+  padding: 14px;
+}
+
+.engineCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.engineCardTop strong {
+  font-weight: 500;
+}
+
+.engineCard p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.engineCard code {
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--night);
+  color: #ffffff;
+  padding: 5px 7px;
+  font-size: 12px;
+}
+
+.engineNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding: 14px 18px 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .opportunityList {
   display: grid;
 }
@@ -726,7 +781,8 @@ h1 {
   }
 
   .compactGrid,
-  .profileForm {
+  .profileForm,
+  .engineGrid {
     grid-template-columns: 1fr;
   }
 

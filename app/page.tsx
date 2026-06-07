@@ -3,9 +3,11 @@ import {
   Bell,
   Bot,
   BriefcaseBusiness,
+  Cpu,
   Gauge,
   Globe2,
   Inbox,
+  KeyRound,
   Megaphone,
   MessageSquareText,
   PlugZap,
@@ -117,6 +119,29 @@ const campaigns = [
   "Construction Leads Botswana"
 ];
 
+const engineProviders = [
+  {
+    name: "OpenAI",
+    env: "OPENAI_API_KEY",
+    role: "Primary classifier and response draft engine"
+  },
+  {
+    name: "Claude",
+    env: "ANTHROPIC_API_KEY",
+    role: "Long-context reasoning and careful reply drafting"
+  },
+  {
+    name: "Perplexity",
+    env: "PERPLEXITY_API_KEY",
+    role: "Research-backed enrichment and source discovery"
+  },
+  {
+    name: "DeepSeek",
+    env: "DEEPSEEK_API_KEY",
+    role: "Cost-efficient classification and bulk scoring"
+  }
+];
+
 export default function Home() {
   return (
     <main className="appShell" id="top">
@@ -167,10 +192,10 @@ export default function Home() {
               <Bell size={17} aria-hidden="true" />
               Daily brief
             </button>
-            <button className="button primary" type="button">
+            <a className="button primary" href="#live-test">
               <Bot size={17} aria-hidden="true" />
               Run signal scan
-            </button>
+            </a>
           </div>
         </header>
 
@@ -435,6 +460,12 @@ export default function Home() {
             </div>
             <div className="mapList">
               <div className="mapItem">
+                <strong>Engine trigger</strong>
+                <span className="metricHint">
+                  Run signal scan starts the source connector and AI scoring flow.
+                </span>
+              </div>
+              <div className="mapItem">
                 <strong>Destination</strong>
                 <span className="metricHint">crm.brandlytics.agency</span>
               </div>
@@ -446,6 +477,47 @@ export default function Home() {
                 <strong>MVP posting mode</strong>
                 <span className="metricHint">Draft only, human approval</span>
               </div>
+            </div>
+          </article>
+
+          <article className="panel wide" id="engine-connections">
+            <div className="sectionHeader">
+              <div>
+                <h2>Engine Connections</h2>
+                <p className="sectionNote">
+                  Connect the LLM provider that classifies signals and writes
+                  drafts.
+                </p>
+              </div>
+              <div className="headerActions">
+                <span className="pill">
+                  <Cpu size={14} aria-hidden="true" />
+                  Provider layer
+                </span>
+                <a className="backLink" href="#top">
+                  Back
+                </a>
+              </div>
+            </div>
+            <div className="engineGrid">
+              {engineProviders.map((provider) => (
+                <div className="engineCard" key={provider.name}>
+                  <div className="engineCardTop">
+                    <strong>{provider.name}</strong>
+                    <span className="pill">Not connected</span>
+                  </div>
+                  <p>{provider.role}</p>
+                  <code>{provider.env}</code>
+                </div>
+              ))}
+            </div>
+            <div className="engineNote">
+              <KeyRound size={16} aria-hidden="true" />
+              <span>
+                Add provider keys as Vercel environment variables. SignalDesk can
+                then route each scan through a selected primary engine with
+                fallback providers later.
+              </span>
             </div>
           </article>
         </section>
