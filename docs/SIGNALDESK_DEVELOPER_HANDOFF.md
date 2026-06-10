@@ -35,6 +35,474 @@ The system must help both:
 - The owner's own apps and digital products.
 - Other businesses/clients who need leads.
 
+## Concept Evolution From Brainstorming
+
+This section captures the version-by-version evolution of the idea. A developer
+should read this before making architectural decisions.
+
+### Version 1: Spiritual Product Awareness System
+
+The first version was imagined around the owner's existing spiritual digital
+products:
+
+- Prayer app
+- Fasting app/product
+- Be Freed app
+- Spiritual PDFs/books
+- Devotionals, worksheets, guides, courses, or resources
+
+The idea:
+
+> List the products, define the phrases people use when they need help, monitor
+> platforms like Reddit, then detect when someone is expressing a need related
+> to those products.
+
+Example Prayer App signals:
+
+```text
+I need prayer.
+Please pray for me.
+I don't know how to pray.
+How do I pray again?
+I feel far from God.
+I need a prayer routine.
+Fasting and prayer.
+Spiritual warfare.
+I need encouragement.
+```
+
+Example Be Freed signals:
+
+```text
+I feel trapped.
+I can't break this habit.
+I need deliverance.
+I keep going back.
+I want to be free from shame.
+I feel stuck spiritually.
+```
+
+The first sketch:
+
+```mermaid
+flowchart TD
+    A["Your Products"] --> B["Keyword + Intent Library"]
+    B --> C["Platform Monitors"]
+    C --> D["Reddit"]
+    C --> E["Facebook Groups"]
+    C --> F["LinkedIn"]
+    D --> G["Opportunity Inbox"]
+    E --> G
+    F --> G
+    G --> H["AI Intent + Fit Scoring"]
+    H --> I["Suggested Response"]
+    H --> J["Lead / Person Profile"]
+    H --> K["Notify You"]
+    I --> L["Manual Approval"]
+    L --> M["Post / DM / Save Outreach"]
+```
+
+Main early modules:
+
+- Products
+- Signals
+- Opportunities
+- Responses
+- Leads
+- Campaigns
+- Analytics
+- Settings
+
+This original module list must be preserved.
+
+### Version 2: Add YouTuber's Marketing Methods As Automated Modules
+
+The owner supplied a transcript from a YouTube video about selling PDFs and
+digital products with no audience.
+
+The methods from that video were converted into SignalDesk modules:
+
+1. Pinterest SEO
+2. Reddit answering
+3. TikTok faceless content
+4. Facebook groups
+5. Influencer marketing
+
+SignalDesk should not become only a content tool, but these modules are useful
+campaign layers after the core signal engine works.
+
+#### Pinterest SEO Module
+
+Purpose:
+
+- Generate Pinterest keywords.
+- Create pin titles and descriptions.
+- Suggest Canva design angles.
+- Link pins to product pages/Gumroad/app landing pages.
+- Generate a 30-day pin calendar.
+
+Example for fasting PDF:
+
+```text
+Christian fasting guide
+How to fast and pray
+Biblical fasting plan
+7 day prayer and fasting guide
+Fasting scriptures printable
+```
+
+#### Reddit / Facebook Group Opportunity Module
+
+Purpose:
+
+- Find communities/groups.
+- Detect question posts.
+- Avoid spammy posting.
+- Draft helpful replies.
+- Track engagement and follow-ups.
+
+Rule:
+
+```text
+Public comments should teach/help first.
+Product links should be soft, contextual, and usually after permission/engagement.
+```
+
+#### Faceless TikTok Content Module
+
+Purpose:
+
+- Turn products into short-form content ideas.
+- Generate slide text.
+- Generate captions.
+- Generate voiceover scripts.
+- Suggest visuals.
+- Link each video to a product.
+
+Example Be Freed video idea:
+
+```text
+3 signs you're carrying spiritual heaviness
+```
+
+Slides:
+
+```text
+You keep feeling stuck even after trying everything.
+You pray, but you don't know what to say.
+You feel shame more than hope.
+Start with one honest prayer today.
+```
+
+#### Influencer Finder Module
+
+Purpose:
+
+- Find creators with the right audience.
+- Check if they already sell competing products.
+- Score fit.
+- Draft outreach messages.
+- Track replies.
+- Suggest affiliate deal terms.
+
+Influencer scoring:
+
+- Audience relevance
+- Engagement rate
+- Content quality
+- Spiritual/business alignment
+- Existing competing offers
+- Partnership likelihood
+
+### Version 3: Industry-Agnostic Signal Intelligence Platform
+
+The owner then clarified:
+
+> Do not limit this to spirituality. It must work for company services too,
+> like construction.
+
+This changed the product from a spiritual product awareness system into a
+general signal intelligence platform.
+
+The new core:
+
+> Know when people in your market are expressing a need you can solve, where
+> they are saying it, how urgent it is, and what action to take next.
+
+Examples of supported categories:
+
+- Spiritual products
+- Construction companies
+- Plumbers
+- Lawyers
+- Coaches
+- Cleaning companies
+- Real estate agents
+- Insurance brokers
+- Clinics
+- Software products
+- Training companies
+- Event services
+- Logistics companies
+
+Construction example signals:
+
+```text
+Looking for a contractor in Gaborone.
+Need someone to renovate my kitchen.
+Who can build a boundary wall?
+Any reliable construction company?
+My roof is leaking.
+Need a quote for paving.
+Recommendations for builders in Botswana?
+```
+
+The Version 3 sketch:
+
+```mermaid
+flowchart TD
+    A["Business / Product Profile"] --> B["Signal Definitions"]
+    B --> C["Platform Collectors"]
+    C --> D["Reddit"]
+    C --> E["LinkedIn"]
+    C --> F["Facebook"]
+    C --> G["X"]
+    C --> H["YouTube Comments"]
+    D --> I["Signal Capture Engine"]
+    E --> I
+    F --> I
+    G --> I
+    H --> I
+    I --> J["Intent Detection"]
+    J --> K["Location Detection"]
+    K --> L["Urgency Scoring"]
+    L --> M["Opportunity Inbox"]
+    M --> N["Alert Owner"]
+    M --> O["Lead Profile"]
+    M --> P["Suggested Action"]
+```
+
+Strongest differentiator:
+
+```text
+Signal Capture Engine
+```
+
+It must:
+
+1. Listen across platforms.
+2. Detect intent, not just keywords.
+3. Understand location when location mode is enabled.
+4. Match signal to business/product.
+5. Score opportunity.
+6. Alert owner.
+7. Save to dashboard.
+8. Suggest next action.
+
+### Version 4: Global First, Location Optional
+
+The owner emphasized:
+
+> It should not be limited to location. Only when toggled. It must harvest
+> signals globally, because with that we can't go wrong.
+
+This became a non-negotiable:
+
+- Global signal harvesting is the default.
+- Location filtering only applies when enabled.
+
+Sketch:
+
+```mermaid
+flowchart LR
+    A["Signal Search"] --> B{"Location Targeting Enabled?"}
+    B -->|No| C["Harvest Globally"]
+    B -->|Yes| D["Apply Country / City / Region Filters"]
+    C --> E["Classify Intent"]
+    D --> E
+    E --> F["Opportunity Inbox"]
+```
+
+Use cases:
+
+Digital prayer product:
+
+```text
+Global Mode: On
+Location Targeting: Off
+```
+
+Construction client:
+
+```text
+Global Mode: Off
+Location Targeting: On
+Locations: Botswana, Gaborone, Francistown
+```
+
+Online course/PDF:
+
+```text
+Global Mode: On
+Location Targeting: Optional
+Language Targeting: Optional
+```
+
+### Version 5: Brandlytics Ecosystem Integration
+
+The owner already has:
+
+```text
+crm.brandlytics.agency
+```
+
+So SignalDesk became:
+
+```text
+signal.brandlytics.agency
+```
+
+The architectural relationship:
+
+```text
+SignalDesk = signal harvesting engine
+Brandlytics CRM = lead qualification, follow-up, and sales engine
+```
+
+SignalDesk should not replace Brandlytics CRM. It supplies it.
+
+Sketch:
+
+```mermaid
+flowchart TD
+    A["SignalDesk Dashboard"] --> B["Products / Services"]
+    A --> C["Signal Rules"]
+    A --> D["Platform Sources"]
+    A --> E["Opportunity Inbox"]
+    A --> F["Responses"]
+    A --> G["Campaigns"]
+    A --> H["Analytics"]
+    A --> I["Settings"]
+
+    B --> J["Signal Engine"]
+    C --> J
+    D --> J
+
+    J --> K["Global Signal Harvesting"]
+    J --> L["Location-Toggled Harvesting"]
+
+    K --> M["Reddit"]
+    K --> N["LinkedIn"]
+    K --> O["Facebook"]
+    K --> P["X"]
+    K --> Q["YouTube"]
+    K --> R["Pinterest / TikTok Research"]
+
+    L --> M
+    L --> N
+    L --> O
+    L --> P
+    L --> Q
+
+    M --> S["Intent Classifier"]
+    N --> S
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+
+    S --> T["Opportunity Scoring"]
+    T --> U["Lead Profile Builder"]
+    U --> V["SignalDesk Opportunity Inbox"]
+    V --> W["Suggested Response / Post"]
+    V --> X["Push to Brandlytics CRM"]
+```
+
+### Version 6: Hybrid Agent + Hosted Dashboard
+
+The owner asked an important strategic question:
+
+> Do I need to build this externally as a web app, or can the engine be Codex,
+> Claude, OpenAI, etc., with a hosted dashboard?
+
+The agreed answer:
+
+Build a hybrid system.
+
+```text
+Dashboard = stable control panel and memory
+Agent/LLM engine = intelligence layer that improves as models improve
+Database/API = owned Brandlytics infrastructure
+```
+
+Sketch:
+
+```mermaid
+flowchart TD
+    A["You click Run / Scheduled Automation"] --> B["SignalDesk Agent"]
+    B --> C["Reddit / YouTube / LinkedIn Assisted / X / Facebook Sources"]
+    C --> D["Agent Classifies Signals"]
+    D --> E["Database"]
+    E --> F["Hosted Dashboard"]
+    E --> G["Brandlytics CRM"]
+    B --> H["Draft Replies / Campaign Ideas / Alerts"]
+```
+
+This avoids stale software because the intelligence layer can use newer models
+later, while the dashboard/database stay stable.
+
+### Version 7: GitHub/Vercel Product System
+
+The owner asked:
+
+> That means this becomes a GitHub system, right, not local?
+
+Decision:
+
+- Yes, it should be GitHub-backed and Vercel-hosted.
+- Local work is only the development workspace.
+- Production belongs on Vercel.
+- Repo should be source of truth.
+
+The first MVP repo was created with:
+
+- Next.js dashboard
+- Architecture docs
+- Brand guide
+- Agent protocol
+- CRM sync contract
+- Mock agent endpoint
+- Live Reddit connector scaffold
+
+### Version 8: Current MVP
+
+Current MVP state:
+
+```mermaid
+flowchart TD
+    A["Products / Services Profile"] --> B["Live Signal Test"]
+    B --> C["Reddit Connector"]
+    C --> D["Rule-Based Scoring For Now"]
+    D --> E["Signal Cards"]
+    E --> F["Draft To Approve"]
+    F --> G["Approve / Edit / Push To CRM Buttons"]
+    H["Engine Connections"] --> I["OpenAI / Claude / Perplexity / DeepSeek Env Vars"]
+```
+
+Important:
+
+- Reddit connector is scaffolded.
+- Anonymous Reddit search may fail with `403`.
+- Reddit OAuth credentials are needed.
+- LLM provider keys are displayed but OpenAI/Claude scoring is not fully wired
+  yet.
+
+The next step is to make the engine real:
+
+```text
+Reddit API -> OpenAI classification/draft -> Opportunity -> Approval -> CRM
+```
+
 ## Non-Negotiable Product Direction
 
 Do not limit SignalDesk to spirituality.
@@ -638,4 +1106,3 @@ them into qualified opportunities for Brandlytics CRM.
 Short version:
 
 > Find people already asking for what you sell.
-
