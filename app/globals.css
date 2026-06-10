@@ -421,7 +421,8 @@ h1 {
 }
 
 .liveForm input,
-.liveForm textarea {
+.liveForm textarea,
+.liveForm select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -429,6 +430,8 @@ h1 {
   color: var(--foreground);
   padding: 9px 12px;
   outline: none;
+  font-family: inherit;
+  font-size: 13px;
 }
 
 .liveForm textarea {

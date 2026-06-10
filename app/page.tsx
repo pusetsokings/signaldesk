@@ -19,6 +19,7 @@ import {
   WandSparkles
 } from "lucide-react";
 import { LiveSignalTester } from "./components/live-signal-tester";
+import { ManualSignalEntry } from "./components/manual-signal-entry";
 
 // Render per-request so the Engine Connections status reflects the live
 // environment variables instead of a stale build-time snapshot.
@@ -295,6 +296,22 @@ export default function Home() {
               </a>
             </div>
             <LiveSignalTester />
+          </article>
+
+          <article className="panel profilePanel" id="manual-signal">
+            <div className="sectionHeader">
+              <div>
+                <h2>Manual Signal Entry</h2>
+                <p className="sectionNote">
+                  Paste a post you found yourself &mdash; works even before
+                  Reddit API access is approved.
+                </p>
+              </div>
+              <a className="backLink" href="#top">
+                Back to overview
+              </a>
+            </div>
+            <ManualSignalEntry />
           </article>
 
           <article className="panel wide" id="opportunities">

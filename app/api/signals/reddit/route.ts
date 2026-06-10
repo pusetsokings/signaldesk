@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { classifyCandidates, type EngineCandidate } from "@/lib/engine";
+import { buildResponseDraft, scoreSignal, splitTerms } from "@/lib/scoring";
 
 type RedditChild = {
   data: {
@@ -20,55 +21,6 @@ type RedditAccessToken = {
   token_type: string;
   expires_in: number;
 };
-
-const buyingIntentTerms = [
-  "need",
-  "looking for",
-  "recommend",
-  "recommendation",
-  "where can i",
-  "how do i",
-  "help",
-  "guide",
-  "app",
-  "resource",
-  "course",
-  "pdf",
-  "plan"
-];
-
-function splitTerms(value: string) {
-  return value
-    .split(",")
-    .map((term) => term.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-function scoreSignal(text: string, signalTerms: string[]) {
-  const haystack = text.toLowerCase();
-  const matchedTerms = signalTerms.filter((term) => haystack.includes(term));
-  const matchedIntentTerms = buyingIntentTerms.filter((term) =>
-    haystack.includes(term)
-  );
-
-  const score = Math.min(
-    98,
-    45 + matchedTerms.length * 15 + matchedIntentTerms.length * 6
-  );
-
-  return {
-    intentScore: score,
-    matchedTerms
-  };
-}
-
-function buildResponseDraft(offerName: string, title: string, matchedTerms: string[]) {
-  const context = matchedTerms.length
-    ? `I noticed you mentioned ${matchedTerms.slice(0, 2).join(" and ")}.`
-    : "I noticed your question and wanted to respond with something practical.";
-
-  return `${context} One helpful next step is to start with the smallest version of the solution: define the problem clearly, take one practical action today, and use a simple resource that keeps you consistent. I have a ${offerName} resource that may help if you want something more structured.`;
-}
 
 async function getRedditAccessToken() {
   const clientId = process.env.REDDIT_CLIENT_ID;
