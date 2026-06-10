@@ -90,6 +90,7 @@ function buildSystemPrompt() {
     "You are the SignalDesk classification engine for Brandlytics.",
     "You analyze public social posts and decide whether each one is a real demand signal for a given offer.",
     "Rules:",
+    `- intent_type must be exactly one of: ${INTENT_TYPES.join(", ")}.`,
     "- Detect intent, not just keywords. A post can match terms but have no intent (score it low, intent_type 'none').",
     "- intent_score is 0-100: how strongly the person is expressing a need the offer can solve.",
     "- urgency_score is 0-100: how time-sensitive their situation appears.",
@@ -155,9 +156,12 @@ function normalizeResults(
         responseDraft: ""
       };
     }
+    const intentType = String(item.intent_type || "none");
     return {
       id: candidate.id,
-      intentType: String(item.intent_type || "none"),
+      intentType: (INTENT_TYPES as readonly string[]).includes(intentType)
+        ? intentType
+        : "none",
       intentScore: clampScore(item.intent_score),
       urgencyScore: clampScore(item.urgency_score),
       summary: String(item.summary || ""),
