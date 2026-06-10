@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { classifyCandidates, type EngineCandidate } from "@/lib/engine";
 
 type RedditChild = {
   data: {
@@ -156,6 +157,7 @@ export async function GET(request: NextRequest) {
         id: data.id,
         title,
         text: text.slice(0, 360),
+        fullText: text.slice(0, 2000),
         author: data.author || "unknown",
         subreddit: data.subreddit || subreddit || "all",
         url: `https://www.reddit.com${data.permalink || ""}`,
@@ -165,6 +167,9 @@ export async function GET(request: NextRequest) {
           ? new Date(data.created_utc * 1000).toISOString()
           : new Date().toISOString(),
         intentScore: scored.intentScore,
+        intentType: "need",
+        urgencyScore: Math.max(0, scored.intentScore - 20),
+        summary: "",
         matchedTerms: scored.matchedTerms,
         suggestedAction:
           scored.intentScore >= 80
@@ -174,11 +179,52 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // AI classification pass: replaces the rule-based scores and drafts when
+    // an engine provider (OpenAI/Claude/DeepSeek) is configured. Falls back
+    // to the rule-based values above when no provider succeeds.
+    let engine = "rule-based";
+    if (signals.length > 0) {
+      const candidates: EngineCandidate[] = signals.map((signal) => ({
+        id: signal.id,
+        title: signal.title,
+        text: signal.fullText,
+        author: signal.author,
+        source: `reddit/r/${signal.subreddit}`,
+        url: signal.url
+      }));
+
+      const result = await classifyCandidates(
+        { offerName, signalTerms },
+        candidates
+      );
+
+      if (result) {
+        engine = result.engine;
+        const byId = new Map(
+          result.classifications.map((item) => [item.id, item])
+        );
+        for (const signal of signals) {
+          const classified = byId.get(signal.id);
+          if (!classified) continue;
+          signal.intentScore = classified.intentScore;
+          signal.intentType = classified.intentType;
+          signal.urgencyScore = classified.urgencyScore;
+          signal.summary = classified.summary;
+          signal.suggestedAction = classified.suggestedAction;
+          if (classified.responseDraft) {
+            signal.responseDraft = classified.responseDraft;
+          }
+        }
+        signals.sort((a, b) => b.intentScore - a.intentScore);
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       query,
+      engine,
       scannedAt: new Date().toISOString(),
-      signals
+      signals: signals.map(({ fullText: _fullText, ...signal }) => signal)
     });
   } catch {
     return NextResponse.json(

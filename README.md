@@ -34,6 +34,20 @@ leads into Brandlytics CRM.
 - Analytics
 - Settings
 
+## Current Status
+
+The full first-sale pipeline is wired end to end:
+
+```text
+Reddit search -> AI classification + per-signal draft (OpenAI/Claude/DeepSeek)
+-> edit/approve in the signal card -> push lead to Brandlytics CRM
+```
+
+With no API keys configured the app still runs: scans fall back to rule-based
+scoring (labeled in the UI) and CRM push returns a clear "not configured"
+message. To go live, complete [docs/GO_LIVE_CHECKLIST.md](docs/GO_LIVE_CHECKLIST.md) —
+it lists the exact credentials only the account owner can add.
+
 ## Architecture
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -20,6 +20,10 @@ import {
 } from "lucide-react";
 import { LiveSignalTester } from "./components/live-signal-tester";
 
+// Render per-request so the Engine Connections status reflects the live
+// environment variables instead of a stale build-time snapshot.
+export const dynamic = "force-dynamic";
+
 const navItems = [
   { label: "Products", icon: BriefcaseBusiness, href: "#products", active: true },
   { label: "Signals", icon: Radar, href: "#signals" },
@@ -140,6 +144,11 @@ const engineProviders = [
     env: "DEEPSEEK_API_KEY",
     role: "Cost-efficient classification and bulk scoring"
   }
+];
+
+const integrations = [
+  { name: "Reddit connector", connected: Boolean(process.env.REDDIT_CLIENT_ID && process.env.REDDIT_CLIENT_SECRET) },
+  { name: "Brandlytics CRM webhook", connected: Boolean(process.env.BRANDLYTICS_CRM_WEBHOOK_URL) }
 ];
 
 export default function Home() {
@@ -500,24 +509,39 @@ export default function Home() {
               </div>
             </div>
             <div className="engineGrid">
-              {engineProviders.map((provider) => (
-                <div className="engineCard" key={provider.name}>
-                  <div className="engineCardTop">
-                    <strong>{provider.name}</strong>
-                    <span className="pill">Not connected</span>
+              {engineProviders.map((provider) => {
+                const connected = Boolean(process.env[provider.env]);
+                return (
+                  <div className="engineCard" key={provider.name}>
+                    <div className="engineCardTop">
+                      <strong>{provider.name}</strong>
+                      <span className={`pill ${connected ? "greenPill" : ""}`}>
+                        {connected ? "Connected" : "Not connected"}
+                      </span>
+                    </div>
+                    <p>{provider.role}</p>
+                    <code>{provider.env}</code>
                   </div>
-                  <p>{provider.role}</p>
-                  <code>{provider.env}</code>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="engineNote">
               <KeyRound size={16} aria-hidden="true" />
               <span>
-                Add provider keys as Vercel environment variables. SignalDesk can
-                then route each scan through a selected primary engine with
-                fallback providers later.
+                Add provider keys as Vercel environment variables, then redeploy.
+                Scans route through OpenAI first, then Claude, then DeepSeek,
+                with rule-based scoring as the final fallback.
               </span>
+            </div>
+            <div className="mapList">
+              {integrations.map((item) => (
+                <div className="mapItem" key={item.name}>
+                  <strong>{item.name}</strong>
+                  <span className="metricHint">
+                    {item.connected ? "Connected" : "Not connected"}
+                  </span>
+                </div>
+              ))}
             </div>
           </article>
         </section>

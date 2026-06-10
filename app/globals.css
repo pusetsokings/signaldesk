@@ -566,6 +566,34 @@ h1 {
   gap: 8px;
 }
 
+.approvalActions .button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.draftEditor {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 10px 11px;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.draftEditor:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.pushSuccess {
+  color: var(--accent);
+  font-size: 13px;
+}
+
 .engineGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
