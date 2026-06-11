@@ -583,8 +583,11 @@ h1 {
   gap: 8px;
 }
 
-.inboxDismiss {
-  align-self: flex-end;
+.inboxItemActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .liveButton:disabled {

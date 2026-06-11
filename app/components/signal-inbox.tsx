@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Inbox, Loader2, RefreshCw } from "lucide-react";
+import { Inbox, Link2, Loader2, RefreshCw } from "lucide-react";
 import {
   SignalDraftCard,
   type DraftableSignal,
@@ -30,6 +30,7 @@ type InboxSignal = {
   watchlist_name?: string | null;
   offer_name?: string | null;
   crm_workspace_id?: string | null;
+  magnet_url?: string | null;
 };
 
 const STATUS_TABS = [
@@ -47,6 +48,7 @@ export function SignalInbox() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [workspaceId, setWorkspaceId] = useState("");
+  const [copiedMagnetId, setCopiedMagnetId] = useState("");
   const workspaces = useCrmWorkspaces();
 
   const refresh = useCallback(() => {
@@ -125,7 +127,9 @@ export function SignalInbox() {
           intent_score: signal.intent_score,
           urgency_score: signal.urgency_score,
           location: "Global",
-          recommended_action: signal.suggested_action,
+          recommended_action: signal.magnet_url
+            ? `${signal.suggested_action} Follow-up magnet link: ${signal.magnet_url}`
+            : signal.suggested_action,
           response_draft: draft?.text || signal.response_draft
         })
       });
@@ -154,6 +158,17 @@ export function SignalInbox() {
   async function dismiss(signal: InboxSignal) {
     await setSignalStatus(signal.id, "dismissed");
     refresh();
+  }
+
+  async function copyMagnet(signal: InboxSignal) {
+    if (!signal.magnet_url) return;
+    try {
+      await navigator.clipboard.writeText(signal.magnet_url);
+      setCopiedMagnetId(signal.id);
+      setTimeout(() => setCopiedMagnetId(""), 2000);
+    } catch {
+      // Clipboard unavailable; the link is still visible in the watchlist row.
+    }
   }
 
   return (
@@ -227,11 +242,21 @@ export function SignalInbox() {
               onUpdateDraft={(patch) => updateDraft(signal.id, patch)}
               onPush={() => pushToCrm(signal)}
             />
-            {signal.status === "new" ? (
-              <button className="button inboxDismiss" onClick={() => dismiss(signal)} type="button">
-                Dismiss
-              </button>
-            ) : null}
+            <div className="inboxItemActions">
+              {signal.magnet_url ? (
+                <button className="button" onClick={() => copyMagnet(signal)} type="button">
+                  <Link2 size={15} aria-hidden="true" />
+                  {copiedMagnetId === signal.id
+                    ? "Copied!"
+                    : "Copy magnet link (for follow-up)"}
+                </button>
+              ) : null}
+              {signal.status === "new" ? (
+                <button className="button" onClick={() => dismiss(signal)} type="button">
+                  Dismiss
+                </button>
+              ) : null}
+            </div>
           </div>
         );
       })}

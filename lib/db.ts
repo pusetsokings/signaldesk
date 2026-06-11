@@ -38,6 +38,8 @@ export type Watchlist = {
   platforms: string[];
   min_intent_score: number;
   crm_workspace_id: string | null;
+  magnet_url: string | null;
+  magnet_slug: string | null;
   is_active: boolean;
   last_scanned_at: string | null;
   created_at: string;
@@ -66,6 +68,7 @@ export type StoredSignal = {
   watchlist_name?: string | null;
   offer_name?: string | null;
   crm_workspace_id?: string | null;
+  magnet_url?: string | null;
 };
 
 export async function listWatchlists(): Promise<Watchlist[]> {
@@ -117,6 +120,8 @@ export async function updateWatchlist(
     platforms: string[];
     min_intent_score: number;
     crm_workspace_id: string | null;
+    magnet_url: string | null;
+    magnet_slug: string | null;
     is_active: boolean;
     last_scanned_at: string;
   }>
@@ -129,6 +134,8 @@ export async function updateWatchlist(
     "platforms",
     "min_intent_score",
     "crm_workspace_id",
+    "magnet_url",
+    "magnet_slug",
     "is_active",
     "last_scanned_at"
   ] as const;
@@ -213,7 +220,7 @@ export async function listInboxSignals(options: {
   }
   params.push(limit);
   const result = await getPool().query(
-    `select s.*, w.name as watchlist_name, w.offer_name, w.crm_workspace_id
+    `select s.*, w.name as watchlist_name, w.offer_name, w.crm_workspace_id, w.magnet_url
      from sd_signals s
      left join sd_watchlists w on w.id = s.watchlist_id
      ${where}

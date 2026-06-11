@@ -28,6 +28,9 @@ export async function PATCH(
   if (typeof body.crmWorkspaceId === "string") {
     patch.crm_workspace_id = body.crmWorkspaceId.trim() || null;
   }
+  if (typeof body.magnetUrl === "string") {
+    patch.magnet_url = body.magnetUrl.trim() || null;
+  }
 
   try {
     const watchlist = await updateWatchlist(id, patch);

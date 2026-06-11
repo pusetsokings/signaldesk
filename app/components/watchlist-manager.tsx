@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Play, Plus, Radar, Trash2 } from "lucide-react";
+import { Link2, Loader2, Play, Plus, Radar, Trash2 } from "lucide-react";
 import { WorkspaceSelect, useCrmWorkspaces } from "./workspace-select";
 
 type Watchlist = {
@@ -13,6 +13,7 @@ type Watchlist = {
   platforms: string[];
   min_intent_score: number;
   crm_workspace_id: string | null;
+  magnet_url: string | null;
   is_active: boolean;
   last_scanned_at: string | null;
 };
@@ -43,6 +44,8 @@ export function WatchlistManager() {
   const [isSaving, setIsSaving] = useState(false);
   const [runningId, setRunningId] = useState("");
   const [runMessage, setRunMessage] = useState("");
+  const [magnetId, setMagnetId] = useState("");
+  const [copiedId, setCopiedId] = useState("");
 
   const refresh = useCallback(() => {
     fetch("/api/watchlists")
@@ -115,6 +118,38 @@ export function WatchlistManager() {
     if (!window.confirm(`Delete watchlist "${watchlist.name}"?`)) return;
     await fetch(`/api/watchlists/${watchlist.id}`, { method: "DELETE" });
     refresh();
+  }
+
+  async function generateMagnet(watchlist: Watchlist) {
+    setMagnetId(watchlist.id);
+    setRunMessage("");
+    try {
+      const response = await fetch(`/api/watchlists/${watchlist.id}/magnet`, {
+        method: "POST"
+      });
+      const data = (await response.json()) as { ok: boolean; url?: string; error?: string };
+      if (data.ok && data.url) {
+        setRunMessage(`Tracked capture link ready: ${data.url}`);
+      } else {
+        setRunMessage(data.error || "Could not create the tracked link.");
+      }
+    } catch {
+      setRunMessage("Could not create the tracked link.");
+    } finally {
+      setMagnetId("");
+      refresh();
+    }
+  }
+
+  async function copyMagnet(watchlist: Watchlist) {
+    if (!watchlist.magnet_url) return;
+    try {
+      await navigator.clipboard.writeText(watchlist.magnet_url);
+      setCopiedId(watchlist.id);
+      setTimeout(() => setCopiedId(""), 2000);
+    } catch {
+      setRunMessage(watchlist.magnet_url);
+    }
   }
 
   async function runNow(watchlist: Watchlist) {
@@ -192,6 +227,26 @@ export function WatchlistManager() {
                 )}
                 Run now
               </button>
+              {watchlist.magnet_url ? (
+                <button className="button" onClick={() => copyMagnet(watchlist)} type="button">
+                  <Link2 size={15} aria-hidden="true" />
+                  {copiedId === watchlist.id ? "Copied!" : "Copy magnet link"}
+                </button>
+              ) : (
+                <button
+                  className="button"
+                  disabled={magnetId === watchlist.id}
+                  onClick={() => generateMagnet(watchlist)}
+                  type="button"
+                >
+                  {magnetId === watchlist.id ? (
+                    <Loader2 size={15} aria-hidden="true" />
+                  ) : (
+                    <Link2 size={15} aria-hidden="true" />
+                  )}
+                  Get tracked link
+                </button>
+              )}
               <button className="button" onClick={() => toggleActive(watchlist)} type="button">
                 {watchlist.is_active ? "Pause" : "Resume"}
               </button>
