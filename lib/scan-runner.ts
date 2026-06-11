@@ -130,6 +130,7 @@ export async function runWatchlist(watchlist: Watchlist): Promise<WatchlistRunRe
       await notifyHotSignals(
         watchlist,
         hotSignals.map((item) => ({
+          id: item.raw.id,
           title: item.raw.title,
           author: item.raw.author,
           url: item.raw.url,

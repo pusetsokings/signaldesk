@@ -231,6 +231,17 @@ export async function listInboxSignals(options: {
   return result.rows;
 }
 
+export async function getSignal(id: string): Promise<StoredSignal | null> {
+  const result = await getPool().query(
+    `select s.*, w.name as watchlist_name, w.offer_name, w.crm_workspace_id, w.magnet_url
+     from sd_signals s
+     left join sd_watchlists w on w.id = s.watchlist_id
+     where s.id = $1`,
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
 export async function updateSignal(
   id: string,
   patch: Partial<{ status: string; response_draft: string; notified: boolean }>

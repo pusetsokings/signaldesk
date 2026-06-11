@@ -62,6 +62,10 @@ const PLATFORMS: Record<
     label: "Mastodon",
     hint: "No credentials needed. Scans the public timeline for the first word of your query as a hashtag."
   },
+  youtube: {
+    label: "YouTube",
+    hint: "Scans comments under matching videos. Needs YOUTUBE_API_KEY (free from Google Cloud Console)."
+  },
   reddit: {
     label: "Reddit",
     hint: "Needs REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET (Reddit now requires app approval under its Responsible Builder Policy)."

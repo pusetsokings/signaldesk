@@ -248,6 +248,104 @@ async function fetchReddit(query: string, limit: number) {
   }));
 }
 
+async function fetchYouTube(query: string, limit: number) {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) {
+    throw new Error(
+      "YouTube scans need YOUTUBE_API_KEY (free from Google Cloud Console)."
+    );
+  }
+
+  const searchUrl =
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=date` +
+    `&maxResults=5&q=${encodeURIComponent(query)}&key=${key}`;
+  const searchResponse = await fetch(searchUrl, { next: { revalidate: 300 } });
+  if (!searchResponse.ok) {
+    throw new Error(`YouTube search returned ${searchResponse.status}.`);
+  }
+  const search = (await searchResponse.json()) as {
+    items?: Array<{
+      id?: { videoId?: string };
+      snippet?: { title?: string; description?: string; channelTitle?: string; publishedAt?: string };
+    }>;
+  };
+
+  const videos = (search.items || []).filter((item) => item.id?.videoId);
+  const signals: RawSignal[] = [];
+
+  // Comments under matching videos are where buying intent lives.
+  for (const video of videos.slice(0, 4)) {
+    const videoId = video.id!.videoId!;
+    const videoTitle = video.snippet?.title || "YouTube video";
+    try {
+      const commentsUrl =
+        `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&order=relevance` +
+        `&maxResults=8&videoId=${videoId}&key=${key}`;
+      const commentsResponse = await fetch(commentsUrl, { next: { revalidate: 300 } });
+      if (!commentsResponse.ok) continue; // comments disabled or restricted
+      const comments = (await commentsResponse.json()) as {
+        items?: Array<{
+          id: string;
+          snippet?: {
+            topLevelComment?: {
+              snippet?: {
+                textOriginal?: string;
+                authorDisplayName?: string;
+                authorChannelUrl?: string;
+                likeCount?: number;
+                publishedAt?: string;
+              };
+            };
+            totalReplyCount?: number;
+          };
+        }>;
+      };
+      for (const thread of comments.items || []) {
+        const comment = thread.snippet?.topLevelComment?.snippet;
+        if (!comment?.textOriginal) continue;
+        signals.push({
+          id: `yt-${thread.id}`,
+          title: `Comment on: ${videoTitle}`.slice(0, 120),
+          text: comment.textOriginal,
+          author: comment.authorDisplayName || "unknown",
+          sourceLabel: "YouTube comments",
+          url: `https://www.youtube.com/watch?v=${videoId}&lc=${thread.id}`,
+          profileUrl: comment.authorChannelUrl || `https://www.youtube.com/watch?v=${videoId}`,
+          score: comment.likeCount || 0,
+          comments: thread.snippet?.totalReplyCount || 0,
+          createdAt: comment.publishedAt || new Date().toISOString()
+        });
+        if (signals.length >= limit) break;
+      }
+    } catch {
+      continue;
+    }
+    if (signals.length >= limit) break;
+  }
+
+  // Fallback: if no comments were readable, surface the videos themselves.
+  if (signals.length === 0) {
+    for (const video of videos) {
+      signals.push({
+        id: `ytv-${video.id!.videoId!}`,
+        title: video.snippet?.title || "YouTube video",
+        text: video.snippet?.description || "",
+        author: video.snippet?.channelTitle || "unknown",
+        sourceLabel: "YouTube",
+        url: `https://www.youtube.com/watch?v=${video.id!.videoId!}`,
+        profileUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(
+          video.snippet?.channelTitle || ""
+        )}`,
+        score: 0,
+        comments: 0,
+        createdAt: video.snippet?.publishedAt || new Date().toISOString()
+      });
+    }
+  }
+
+  return signals.slice(0, limit);
+}
+
 export const PLATFORM_FETCHERS: Record<
   string,
   (query: string, limit: number) => Promise<RawSignal[]>
@@ -255,7 +353,8 @@ export const PLATFORM_FETCHERS: Record<
   hackernews: fetchHackerNews,
   bluesky: fetchBluesky,
   mastodon: fetchMastodon,
-  reddit: fetchReddit
+  reddit: fetchReddit,
+  youtube: fetchYouTube
 };
 
 export function supportedPlatforms() {

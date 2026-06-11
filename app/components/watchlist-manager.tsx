@@ -22,6 +22,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   hackernews: "Hacker News",
   bluesky: "Bluesky",
   mastodon: "Mastodon",
+  youtube: "YouTube",
   reddit: "Reddit"
 };
 
