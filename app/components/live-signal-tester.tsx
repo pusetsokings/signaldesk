@@ -7,6 +7,7 @@ import {
   type DraftableSignal,
   type DraftState
 } from "./signal-draft-card";
+import { WorkspaceSelect, useCrmWorkspaces } from "./workspace-select";
 
 type LiveSignal = {
   id: string;
@@ -83,6 +84,8 @@ export function LiveSignalTester() {
     "need prayer, how do I pray, prayer routine, fasting guide, spiritual help"
   );
   const [subreddit, setSubreddit] = useState("");
+  const [workspaceId, setWorkspaceId] = useState("");
+  const workspaces = useCrmWorkspaces();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ScanResponse | null>(null);
   const [drafts, setDrafts] = useState<Record<string, DraftState>>({});
@@ -152,6 +155,7 @@ export function LiveSignalTester() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...(workspaceId ? { workspace_id: workspaceId } : {}),
           platform,
           lead_name: signal.author,
           profile_url: profileUrlFor(signal),
@@ -221,6 +225,11 @@ export function LiveSignalTester() {
             onChange={(event) => setSignalTerms(event.target.value)}
           />
         </label>
+        <WorkspaceSelect
+          workspaces={workspaces}
+          value={workspaceId}
+          onChange={setWorkspaceId}
+        />
         {platform === "reddit" ? (
           <label>
             Subreddit filter

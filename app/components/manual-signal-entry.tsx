@@ -7,6 +7,7 @@ import {
   type DraftableSignal,
   type DraftState
 } from "./signal-draft-card";
+import { WorkspaceSelect, useCrmWorkspaces } from "./workspace-select";
 
 type ManualSignal = {
   id: string;
@@ -57,6 +58,8 @@ export function ManualSignalEntry() {
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
   const [postText, setPostText] = useState("");
+  const [workspaceId, setWorkspaceId] = useState("");
+  const workspaces = useCrmWorkspaces();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ManualResponse | null>(null);
   const [draft, setDraft] = useState<DraftState | null>(null);
@@ -115,6 +118,7 @@ export function ManualSignalEntry() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...(workspaceId ? { workspace_id: workspaceId } : {}),
           platform,
           lead_name: signal.author,
           profile_url: signal.url,
@@ -205,6 +209,11 @@ export function ManualSignalEntry() {
             onChange={(event) => setUrl(event.target.value)}
           />
         </label>
+        <WorkspaceSelect
+          workspaces={workspaces}
+          value={workspaceId}
+          onChange={setWorkspaceId}
+        />
         <label>
           Paste the post text
           <textarea
