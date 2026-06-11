@@ -31,7 +31,12 @@ export async function GET() {
 
     const data = (await response.json()) as {
       ok: boolean;
-      workspaces?: Array<{ id: string; name: string }>;
+      workspaces?: Array<{
+        id: string;
+        name: string;
+        offerName?: string | null;
+        icp?: string | null;
+      }>;
     };
 
     return NextResponse.json({ ok: true, workspaces: data.workspaces || [] });
