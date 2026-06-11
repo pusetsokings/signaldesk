@@ -153,6 +153,8 @@ const integrations = [
   { name: "Hacker News connector (no key needed)", connected: true },
   { name: "Bluesky connector (no key needed)", connected: true },
   { name: "Mastodon connector (no key needed)", connected: true },
+  { name: "YouTube connector", connected: Boolean(process.env.YOUTUBE_API_KEY) },
+  { name: "Telegram alerts bot", connected: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) },
   { name: "Reddit connector", connected: Boolean(process.env.REDDIT_CLIENT_ID && process.env.REDDIT_CLIENT_SECRET) },
   { name: "Brandlytics CRM webhook", connected: Boolean(process.env.BRANDLYTICS_CRM_WEBHOOK_URL) }
 ];
