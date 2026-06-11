@@ -148,6 +148,9 @@ const engineProviders = [
 ];
 
 const integrations = [
+  { name: "Hacker News connector (no key needed)", connected: true },
+  { name: "Bluesky connector (no key needed)", connected: true },
+  { name: "Mastodon connector (no key needed)", connected: true },
   { name: "Reddit connector", connected: Boolean(process.env.REDDIT_CLIENT_ID && process.env.REDDIT_CLIENT_SECRET) },
   { name: "Brandlytics CRM webhook", connected: Boolean(process.env.BRANDLYTICS_CRM_WEBHOOK_URL) }
 ];
@@ -288,7 +291,9 @@ export default function Home() {
               <div>
                 <h2>Live Signal Test</h2>
                 <p className="sectionNote">
-                  Run the first real scan against Reddit public search.
+                  Run real scans against Hacker News, Bluesky, and Mastodon
+                  (no credentials needed) &mdash; or Reddit once API access is
+                  approved.
                 </p>
               </div>
               <a className="backLink" href="#top">
