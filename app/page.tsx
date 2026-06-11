@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { LiveSignalTester } from "./components/live-signal-tester";
 import { ManualSignalEntry } from "./components/manual-signal-entry";
+import { SignalInbox } from "./components/signal-inbox";
+import { WatchlistManager } from "./components/watchlist-manager";
 
 // Render per-request so the Engine Connections status reflects the live
 // environment variables instead of a stale build-time snapshot.
@@ -284,6 +286,39 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </article>
+
+          <article className="panel profilePanel" id="watchlists">
+            <div className="sectionHeader">
+              <div>
+                <h2>Watchlists — automatic scanning</h2>
+                <p className="sectionNote">
+                  Saved searches that SignalDesk runs automatically. New
+                  signals are stored in the Signal Inbox and hot ones trigger
+                  an email alert.
+                </p>
+              </div>
+              <a className="backLink" href="#top">
+                Back to overview
+              </a>
+            </div>
+            <WatchlistManager />
+          </article>
+
+          <article className="panel profilePanel" id="inbox">
+            <div className="sectionHeader">
+              <div>
+                <h2>Signal Inbox</h2>
+                <p className="sectionNote">
+                  Every signal your watchlists find, ranked by intent and kept
+                  until you act: approve and push to CRM, or dismiss.
+                </p>
+              </div>
+              <a className="backLink" href="#top">
+                Back to overview
+              </a>
+            </div>
+            <SignalInbox />
           </article>
 
           <article className="panel profilePanel" id="live-test">
