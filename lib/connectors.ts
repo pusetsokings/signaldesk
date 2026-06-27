@@ -1,8 +1,8 @@
 /**
  * Platform connectors shared by the on-demand scan endpoint and the
- * scheduled watchlist scanner. Hacker News, Bluesky, and Mastodon expose
- * public APIs that need no credentials; Reddit joins automatically once
- * REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET are configured.
+ * scheduled watchlist scanner. Hacker News, Bluesky, Mastodon, and Reddit
+ * use public APIs that need no credentials. Set REDDIT_SESSION_COOKIE for
+ * authenticated Reddit access (extract from rdt-cli credential.json).
  */
 
 export type RawSignal = {
@@ -176,39 +176,23 @@ async function fetchMastodon(query: string, limit: number) {
 }
 
 async function fetchReddit(query: string, limit: number) {
-  const clientId = process.env.REDDIT_CLIENT_ID;
-  const clientSecret = process.env.REDDIT_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error(
-      "Reddit scans need REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET (pending Reddit app approval)."
-    );
-  }
+  // Uses Reddit's public JSON API — no OAuth approval needed.
+  // Optionally pass REDDIT_SESSION_COOKIE (from rdt-cli ~/.config/rdt-cli/credential.json)
+  // for authenticated access with better rate limits.
+  const sessionCookie = process.env.REDDIT_SESSION_COOKIE;
 
-  const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-  const tokenResponse = await fetch("https://www.reddit.com/api/v1/access_token", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "User-Agent": USER_AGENT
-    },
-    body: "grant_type=client_credentials",
-    cache: "no-store"
-  });
-  if (!tokenResponse.ok) {
-    throw new Error(`Reddit auth returned ${tokenResponse.status}.`);
+  const headers: HeadersInit = {
+    "User-Agent": USER_AGENT,
+    "Accept": "application/json",
+  };
+
+  if (sessionCookie) {
+    headers["Cookie"] = `reddit_session=${sessionCookie}`;
   }
-  const token = (await tokenResponse.json()) as { access_token: string };
 
   const response = await fetch(
-    `https://oauth.reddit.com/search.json?q=${encodeURIComponent(query)}&sort=new&limit=${limit}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        "User-Agent": USER_AGENT
-      },
-      next: { revalidate: 60 }
-    }
+    `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&sort=new&limit=${limit}&type=link`,
+    { headers, next: { revalidate: 60 } }
   );
   if (!response.ok) {
     throw new Error(`Reddit search returned ${response.status}.`);
@@ -246,6 +230,60 @@ async function fetchReddit(query: string, limit: number) {
       ? new Date(data.created_utc * 1000).toISOString()
       : new Date().toISOString()
   }));
+}
+
+const NITTER_INSTANCES = [
+  "https://nitter.privacydev.net",
+  "https://nitter.poast.org",
+  "https://nitter.net",
+];
+
+function parseNitterRSS(xml: string, limit: number): RawSignal[] {
+  const items: RawSignal[] = [];
+  for (const match of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+    if (items.length >= limit) break;
+    const b = match[1];
+    const cdata = (tag: string) =>
+      b.match(new RegExp(`<${tag}><\\!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`))?.[1] ??
+      b.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`))?.[1] ?? "";
+    const link = (cdata("link").trim() || b.match(/<link\/>([\s\S]*?)<title/)?.[1]?.trim()) ?? "";
+    const tweetId = link.match(/\/status\/(\d+)/)?.[1];
+    if (!tweetId) continue;
+    const username = link.match(/\/([^/]+)\/status/)?.[1] ?? cdata("dc:creator").replace(/^@/, "") ?? "unknown";
+    items.push({
+      id: `tw-${tweetId}`,
+      title: stripHtml(cdata("title")).slice(0, 120) || "Tweet",
+      text: stripHtml(cdata("description")) || stripHtml(cdata("title")),
+      author: username,
+      sourceLabel: "Twitter/X",
+      url: `https://twitter.com/${username}/status/${tweetId}`,
+      profileUrl: `https://twitter.com/${username}`,
+      score: 0,
+      comments: 0,
+      createdAt: (() => { try { return new Date(cdata("pubDate")).toISOString(); } catch { return new Date().toISOString(); } })(),
+    });
+  }
+  return items;
+}
+
+async function fetchTwitter(query: string, limit: number): Promise<RawSignal[]> {
+  let lastError: Error = new Error("All Nitter instances failed.");
+  for (const base of NITTER_INSTANCES) {
+    try {
+      const url = `${base}/search/rss?q=${encodeURIComponent(query)}&f=tweets`;
+      const response = await fetch(url, {
+        headers: { "User-Agent": USER_AGENT },
+        signal: AbortSignal.timeout(8000),
+        next: { revalidate: 60 },
+      });
+      if (!response.ok) continue;
+      const items = parseNitterRSS(await response.text(), limit);
+      if (items.length > 0) return items;
+    } catch (e) {
+      lastError = e as Error;
+    }
+  }
+  throw lastError;
 }
 
 async function fetchYouTube(query: string, limit: number) {
@@ -354,6 +392,7 @@ export const PLATFORM_FETCHERS: Record<
   bluesky: fetchBluesky,
   mastodon: fetchMastodon,
   reddit: fetchReddit,
+  twitter: fetchTwitter,
   youtube: fetchYouTube
 };
 
