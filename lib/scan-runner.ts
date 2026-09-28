@@ -9,6 +9,7 @@ import {
   type Watchlist
 } from "@/lib/db";
 import { notifyHotSignals } from "@/lib/notify";
+import { isUrgentForAutoAction, runAutoActions } from "@/lib/auto-action";
 
 export type WatchlistRunResult = {
   watchlistId: string;
@@ -121,10 +122,24 @@ export async function runWatchlist(watchlist: Watchlist): Promise<WatchlistRunRe
 
     inserted = await insertSignals(rows);
 
-    const hotSignals = scored.filter(
+    let autoHandled = new Set<string>();
+    const urgentIds = scored
+      .filter((item) => isUrgentForAutoAction({ id: item.raw.id, ...item }, engine))
+      .map((item) => item.raw.id);
+    if (urgentIds.length > 0) {
+      try {
+        autoHandled = await runAutoActions(urgentIds);
+      } catch (error) {
+        console.error("SignalDesk auto-action failed", error);
+      }
+    }
+
+    const allHot = scored.filter(
       (item) => item.intentScore >= watchlist.min_intent_score
     );
-    hot = hotSignals.length;
+    hot = allHot.length;
+    // Auto-handled signals already got their own Telegram message.
+    const hotSignals = allHot.filter((item) => !autoHandled.has(item.raw.id));
 
     if (hotSignals.length > 0) {
       await notifyHotSignals(
