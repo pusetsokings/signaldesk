@@ -43,6 +43,7 @@ const ENGINE_LABELS: Record<string, string> = {
   openai: "OpenAI engine",
   anthropic: "Claude engine",
   deepseek: "DeepSeek engine",
+  typesafe: "TypeSafe triage",
   "rule-based": "Rule-based scoring (connect an AI engine for real classification)"
 };
 

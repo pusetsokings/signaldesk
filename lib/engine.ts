@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { triageWithTypeSafe, typesafeConfigured } from "@/lib/typesafe-triage";
 
 /**
  * SignalDesk engine layer.
@@ -29,8 +30,12 @@ export type EngineClassification = {
   responseDraft: string;
 };
 
+type DraftingEngine = "openai" | "anthropic" | "deepseek";
+
 export type EngineResult = {
-  engine: "openai" | "anthropic" | "deepseek" | "rule-based";
+  engine: DraftingEngine | "typesafe" | "rule-based";
+  /** Set when TypeSafe triaged: which LLM wrote the drafts, if any. */
+  drafter?: DraftingEngine;
   classifications: EngineClassification[];
 };
 
@@ -259,12 +264,16 @@ export function configuredEngines() {
     openai: Boolean(process.env.OPENAI_API_KEY),
     anthropic: Boolean(process.env.ANTHROPIC_API_KEY),
     deepseek: Boolean(process.env.DEEPSEEK_API_KEY),
-    perplexity: Boolean(process.env.PERPLEXITY_API_KEY)
+    perplexity: Boolean(process.env.PERPLEXITY_API_KEY),
+    typesafe: typesafeConfigured()
   };
 }
 
 /**
- * Classify candidates through the first available provider.
+ * Classify candidates. When TypeSafe is configured it supplies the intent
+ * type and scores, and the LLM chain only drafts text for candidates that
+ * pass triage. Without TypeSafe (or if it fails) the LLM chain does
+ * everything, exactly as before.
  * Returns null when no provider succeeds; the caller is expected to fall
  * back to rule-based scoring so the scan never hard-fails.
  */
@@ -274,6 +283,50 @@ export async function classifyCandidates(
 ): Promise<EngineResult | null> {
   if (candidates.length === 0) return null;
 
+  const triage = await triageWithTypeSafe(offer, candidates);
+  if (!triage) return classifyWithChain(offer, candidates);
+
+  const draftFloor = Number(process.env.TYPESAFE_DRAFT_MIN_SCORE || 40);
+  const toDraft = candidates.filter((candidate) => {
+    const judged = triage.get(candidate.id)!;
+    return judged.intentType !== "none" && judged.intentScore >= draftFloor;
+  });
+  const drafted = toDraft.length
+    ? await classifyWithChain(offer, toDraft)
+    : null;
+  const draftsById = new Map(
+    (drafted?.classifications ?? []).map((item) => [item.id, item])
+  );
+
+  return {
+    engine: "typesafe",
+    drafter: drafted?.engine as DraftingEngine | undefined,
+    classifications: candidates.map((candidate) => {
+      const judged = triage.get(candidate.id)!;
+      const draft = draftsById.get(candidate.id);
+      const skipped = !toDraft.includes(candidate);
+      return {
+        id: candidate.id,
+        intentType: judged.intentType,
+        intentScore: judged.intentScore,
+        urgencyScore: judged.urgencyScore,
+        summary:
+          draft?.summary ||
+          (skipped
+            ? "Low intent: TypeSafe triage skipped drafting."
+            : "No drafting engine returned text for this signal."),
+        suggestedAction:
+          draft?.suggestedAction || (skipped ? "No action needed." : "Review manually."),
+        responseDraft: draft?.responseDraft || ""
+      };
+    })
+  };
+}
+
+async function classifyWithChain(
+  offer: OfferContext,
+  candidates: EngineCandidate[]
+): Promise<EngineResult | null> {
   const primary = (process.env.ENGINE_PRIMARY || "").toLowerCase();
   const chain = [...DEFAULT_CHAIN].sort((a, b) =>
     a === primary ? -1 : b === primary ? 1 : 0
