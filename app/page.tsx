@@ -146,6 +146,11 @@ const engineProviders = [
     name: "DeepSeek",
     env: "DEEPSEEK_API_KEY",
     role: "Cost-efficient classification and bulk scoring"
+  },
+  {
+    name: "TypeSafe",
+    env: "TYPESAFE_API_KEY",
+    role: "Calibrated intent and urgency triage (gates LLM drafting)"
   }
 ];
 
