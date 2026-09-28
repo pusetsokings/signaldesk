@@ -95,7 +95,7 @@ export async function runWatchlist(watchlist: Watchlist): Promise<WatchlistRunRe
         item.urgencyScore = match.urgencyScore;
         item.summary = match.summary;
         item.suggestedAction = match.suggestedAction;
-        if (match.responseDraft) item.responseDraft = match.responseDraft;
+        if (match.responseDraft || match.draftSkipped) item.responseDraft = match.responseDraft;
       }
     }
 

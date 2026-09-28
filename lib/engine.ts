@@ -28,6 +28,8 @@ export type EngineClassification = {
   summary: string;
   suggestedAction: string;
   responseDraft: string;
+  /** True when TypeSafe triage judged the signal too weak to draft a reply for. */
+  draftSkipped?: boolean;
 };
 
 type DraftingEngine = "openai" | "anthropic" | "deepseek";
@@ -317,7 +319,8 @@ export async function classifyCandidates(
             : "No drafting engine returned text for this signal."),
         suggestedAction:
           draft?.suggestedAction || (skipped ? "No action needed." : "Review manually."),
-        responseDraft: draft?.responseDraft || ""
+        responseDraft: draft?.responseDraft || "",
+        draftSkipped: skipped
       };
     })
   };

@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
           signal.urgencyScore = classified.urgencyScore;
           signal.summary = classified.summary;
           signal.suggestedAction = classified.suggestedAction;
-          if (classified.responseDraft) {
+          if (classified.responseDraft || classified.draftSkipped) {
             signal.responseDraft = classified.responseDraft;
           }
         }

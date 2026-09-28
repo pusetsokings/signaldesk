@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       signal.urgencyScore = classified.urgencyScore;
       signal.summary = classified.summary;
       signal.suggestedAction = classified.suggestedAction;
-      if (classified.responseDraft) signal.responseDraft = classified.responseDraft;
+      if (classified.responseDraft || classified.draftSkipped) signal.responseDraft = classified.responseDraft;
     }
   }
 
